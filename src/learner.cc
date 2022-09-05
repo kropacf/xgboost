@@ -320,14 +320,14 @@ class LearnerConfiguration : public Learner {
   explicit LearnerConfiguration(std::vector<std::shared_ptr<DMatrix> > cache)
       : need_configuration_{true} {
     monitor_.Init("Learner");
-    std::lock_guard(tlpc_lock);
+    std::lock_guard<std::mutex> lock(tlpc_lock);
     auto& local_cache = (*ThreadLocalPredictionCache::Get())[this];
     for (std::shared_ptr<DMatrix> const& d : cache) {
       local_cache.Cache(d, GenericParameter::kCpuId);
     }
   }
   ~LearnerConfiguration() override {
-    std::lock_guard(tlpc_lock);
+    std::lock_guard<std::mutex> lock(tlpc_lock);
     auto local_cache = ThreadLocalPredictionCache::Get();
     if (local_cache->find(this) != local_cache->cend()) {
       local_cache->erase(this);
@@ -405,7 +405,7 @@ class LearnerConfiguration : public Learner {
   }
 
   virtual PredictionContainer* GetPredictionCache() const {
-    std::lock_guard(tlpc_lock);
+    std::lock_guard<std::mutex> lock(tlpc_lock);
     return &((*ThreadLocalPredictionCache::Get())[this]);
   }
 
