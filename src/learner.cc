@@ -405,7 +405,7 @@ class LearnerConfiguration : public Learner {
   }
 
   virtual PredictionContainer* GetPredictionCache() const {
-    std::lock_guard<std::mutex> lock(tlpc_lock);
+    // std::lock_guard<std::mutex> lock(tlpc_lock);
     return &((*ThreadLocalPredictionCache::Get())[this]);
   }
 
